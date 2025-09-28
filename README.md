@@ -31,7 +31,8 @@ We will not only meet the base requirements of the problem statement but also ex
    - Structured schemas to store user details, vehicle information, bookings, services, and accessories.  
    - Optimized queries for fast and reliable data retrieval.  
 
-4. **AI Voice Assistant(operating website through voice instructions):**  
+4. **AI Voice Assistant(operating website through voice instructions):** 
+   - operating website through voice instructions in different languages and response back with same  language.
    - Integration of speech recognition and text-to-speech features.  
    - Multi-language support for navigation and action execution.  
    - Personalization of responses based on user behavior and history.  

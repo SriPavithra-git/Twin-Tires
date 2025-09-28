@@ -1,17 +1,30 @@
 // src/components/Navbar.jsx
 import React, { useState } from "react";
-import logo from "../Assets/bikeman.png"; // ensure this file exists
+import { NavLink, useNavigate } from "react-router-dom";
+// If the image lives in src/Assets/, keep the import. Otherwise use "/bikeman.png" for public/.
+import logo from "../Assets/bikeman.png";
 import "../TwinTiresLanding.css";
+import { FaHeart } from "react-icons/fa"; 
+
 
 export default function Navbar({ onSearch = () => {} }) {
-  const [open, setOpen] = useState(false);
+  const [openRole, setOpenRole] = useState(false);
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+
+  const submitSearch = (q) => {
+    onSearch(q);
+    // go to buy page to show results
+    navigate("/buy");
+  };
 
   return (
     <header className="tt-nav">
       <div className="nav-left">
         <img src={logo} alt="Twin Tires" className="nav-logo" />
-        <div className="brand">Twin Tires</div>
+        <NavLink to="/" className="brand" style={{ textDecoration: "none" }}>
+          Twin Tires
+        </NavLink>
       </div>
 
       <div className={`nav-center`}>
@@ -23,22 +36,26 @@ export default function Navbar({ onSearch = () => {} }) {
           }}
           placeholder="Search model, brand or city"
           className="nav-search"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submitSearch(query);
+          }}
         />
       </div>
 
       <div className="nav-right">
-  <button className="nav-btn">Home</button>
-  <button className="nav-btn">Buy Bikes</button>
-  <button className="nav-btn">Sell Bikes</button>
-  <button className="nav-btn">Services</button>
+        <NavLink to="/" className="nav-btn">Home</NavLink>
+        <NavLink to="/buy" className="nav-btn">Buy Bikes</NavLink>
+        <NavLink to="/sell" className="nav-btn">Sell Bikes</NavLink>
+        <NavLink to="/services" className="nav-btn">Services</NavLink>
+       <NavLink to="/login" className="nav-btn">Login</NavLink>
 
-  <div className="login-dd">
-    <button className="nav-btn">Login</button>
-  </div>
+         <NavLink to="/wishlist" className="nav-btn" title="Wishlist">
+          <FaHeart style={{ color: "orange", fontSize: "20px" }} />
+        </NavLink>
 
-  <button className="nav-btn">List your Bike</button>
-</div>
 
+       
+      </div>
     </header>
   );
 }

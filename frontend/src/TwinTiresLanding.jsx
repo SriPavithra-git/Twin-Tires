@@ -1,159 +1,101 @@
+// src/TwinTiresLanding.jsx
 import React, { useState } from "react";
+import LogoAnimation from "./components/LogoAnimation";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import CategorySection from "./components/CategorySection";
+import PromotionSection from "./components/PromotionSection";
 import BikeCard from "./components/BikeCard";
-import CompareModal from "./components/CompareModal";
 import Footer from "./components/Footer";
+import CompareBikes from "./components/CompareBikes";
 import "./TwinTiresLanding.css";
 
 export default function TwinTiresLanding() {
+  const [showLanding, setShowLanding] = useState(false);
   const [wishlist, setWishlist] = useState([]);
-  const [compareOpen, setCompareOpen] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareSelection, setCompareSelection] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [rideBooking, setRideBooking] = useState(null); // bike being booked
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [rideBooking, setRideBooking] = useState(null);
 
-  const bikes = [
-    {
-      id: 1,
-      name: "Royal Enfield Classic 350",
-      price: "$2,200",
-      city: "New Delhi",
-      year: 2019,
-      kms: "18,000 km",
-      image:
-        "https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=800&q=60",
-    },
-    {
-      id: 2,
-      name: "Ola S1 Pro",
-      price: "$1,800",
-      city: "Hyderabad",
-      year: 2022,
-      kms: "2,500 km",
-      image:
-        "https://images.unsplash.com/photo-1605792657660-2f2b11abfae1?auto=format&fit=crop&w=800&q=60",
-    },
-    {
-      id: 3,
-      name: "TVS Apache RTR 160",
-      price: "$1,200",
-      city: "Bengaluru",
-      year: 2020,
-      kms: "9,200 km",
-      image:
-        "https://images.unsplash.com/photo-1524594153529-8f25c8c1a768?auto=format&fit=crop&w=800&q=60",
-    },
-    // add more objects as needed
+  const categories = [
+    { id: "commuter", title: "Commuter Bikes", subtitle: "Daily & efficient", img: "/daily_efficient_bikes.jpg" },
+    { id: "scooter", title: "Scooters", subtitle: "Convenient & lightweight", img: "/light_weight_bikes.jpeg" },
+    { id: "sports", title: "Sports Bikes", subtitle: "Agile & fast", img: "/fast_bike.jpeg" },
+    { id: "cruiser", title: "Cruisers", subtitle: "Comfort & style", img: "/comfort_bike.webp" },
+    { id: "electric", title: "Electric", subtitle: "Silent & efficient", img: "/efficient_bike.jpg" },
+    { id: "vintage", title: "Vintage / Classics", subtitle: "Timeless rides", img: "/timeless_ride_bike.jpg" },
+    { id: "adventure", title: "Adventure", subtitle: "Off-road capable", img: "/off_road_bike.webp" },
+    { id: "accessories", title: "Accessories", subtitle: "Helmets, gear & more", img: "/accessories.jpg" },
   ];
 
-  // Filter bikes by search query (name or city)
-  const filtered = bikes.filter((b) =>
-    (b.name + " " + b.city).toLowerCase().includes(searchQuery.toLowerCase())
+  const bikes = [
+    { id: 1, name: "Royal Enfield Classic 350", price: "$2,200", city: "New Delhi", year: 2019, kms: "18,000 km", type: "commuter", image: "/bike1.jpg" }, // change image if needed here
+    { id: 2, name: "Ola S1 Pro", price: "$1,800", city: "Hyderabad", year: 2022, kms: "2,500 km", type: "electric", image: "/bike2.jpg" }, // image line
+    { id: 3, name: "TVS Apache RTR 160", price: "$1,200", city: "Bengaluru", year: 2020, kms: "9,200 km", type: "sports", image: "/bike3.jpg" }, // image line
+  ];
+
+  const filteredBikes = bikes.filter(
+    (b) =>
+      (b.name + " " + b.city + " " + b.type).toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (categoryFilter ? b.type === categoryFilter : true)
   );
 
-  const toggleWishlist = (bike) => {
-    if (wishlist.find((b) => b.id === bike.id)) {
-      setWishlist(wishlist.filter((b) => b.id !== bike.id));
-    } else {
-      setWishlist([...wishlist, bike]);
-    }
+  const toggleWishlist = (bike) =>
+    wishlist.find((b) => b.id === bike.id)
+      ? setWishlist(wishlist.filter((b) => b.id !== bike.id))
+      : setWishlist([...wishlist, bike]);
+
+  const toggleCompareSelect = (bike) => {
+    if (compareSelection.find((b) => b.id === bike.id))
+      setCompareSelection(compareSelection.filter((b) => b.id !== bike.id));
+    else if (compareSelection.length < 2) setCompareSelection([...compareSelection, bike]);
   };
+
+  if (!showLanding) return <LogoAnimation onFinish={() => setShowLanding(true)} />;
+
+  if (compareMode)
+    return <CompareBikes bikes={bikes} compareSelection={compareSelection} setCompareSelection={setCompareSelection} onClose={() => setCompareMode(false)} />;
 
   return (
     <div className="tt-container">
-      <Navbar
-        onSearch={(q) => setSearchQuery(q)}
-      />
+      <Navbar onSearch={(q) => { setSearchQuery(q); setCategoryFilter(""); }} />
+      <Hero onSearch={(q) => { setSearchQuery(q); setCategoryFilter(""); }} />
 
-      <Hero onSearch={(q) => setSearchQuery(q)} />
+      <CategorySection categories={categories} onSelect={(c) => setCategoryFilter(c.id)} />
+
+      <PromotionSection promotions={[
+        { id: "discount", title: "Up to 20% off", subtitle: "Limited time", img: "/discount.jpg" }, // image line
+        { id: "price-drop", title: "Price Drops Today", subtitle: "Grab fast", img: "/price_drop.jpg" }, // image line
+      ]} />
 
       <main className="tt-main">
-        <section className="listings">
-          <div className="listings-head">
-            <h2>Popular Listings</h2>
-            <div className="listings-actions">
-              <span className="muted">{filtered.length} results</span>
-              <button className="btn-outline">Sell a Bike</button>
-            </div>
-          </div>
+        <div className="listings-head">
+          <h2>{categoryFilter ? `Showing: ${categories.find(c => c.id === categoryFilter)?.title}` : "Popular Listings"}</h2>
+          <span>{filteredBikes.length} results</span>
+        </div>
 
-          <div className="card-grid">
-            {filtered.map((bike) => (
-              <BikeCard
-                key={bike.id}
-                bike={bike}
-                inWishlist={!!wishlist.find((b) => b.id === bike.id)}
-                toggleWishlist={() => toggleWishlist(bike)}
-                onBook={() => setRideBooking(bike)}
-              />
-            ))}
-            {filtered.length === 0 && (
-              <div className="no-results">No listings found for "{searchQuery}"</div>
-            )}
-          </div>
-        </section>
+        <div className="card-grid">
+          {filteredBikes.map((bike) => (
+            <BikeCard
+              key={bike.id}
+              bike={bike}
+              inWishlist={!!wishlist.find((b) => b.id === bike.id)}
+              toggleWishlist={() => toggleWishlist(bike)}
+              onBook={() => setRideBooking(bike)}
+              compareMode={true}
+              compareSelected={!!compareSelection.find((b) => b.id === bike.id)}
+              toggleCompare={() => toggleCompareSelect(bike)}
+            />
+          ))}
+        </div>
       </main>
 
-      {/* Compare bar */}
-      {wishlist.length >= 2 && (
-        <div className="compare-bar">
-          <div className="compare-preview">
-            <strong>{wishlist.length}</strong> bikes in wishlist
-            <div className="compare-thumbs">
-              {wishlist.slice(0, 4).map((b) => (
-                <img key={b.id} src={b.image} alt={b.name} />
-              ))}
-            </div>
-          </div>
-          <div>
-            <button
-              className="btn-primary"
-              onClick={() => setCompareOpen(true)}
-            >
-              Compare Now
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Compare modal */}
-      {compareOpen && (
-        <CompareModal
-          bikes={wishlist}
-          onClose={() => setCompareOpen(false)}
-        />
-      )}
-
-      {/* Booking modal */}
-      {rideBooking && (
-        <div className="modal-backdrop" onClick={() => setRideBooking(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Book Test Ride</h3>
-            <p>
-              Booking test ride for <strong>{rideBooking.name}</strong> in{" "}
-              {rideBooking.city}.
-            </p>
-            <label>
-              Your name
-              <input placeholder="Full name" />
-            </label>
-            <label>
-              Phone
-              <input placeholder="Mobile number" />
-            </label>
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-              <button className="btn-outline" onClick={() => setRideBooking(null)}>Cancel</button>
-              <button
-                className="btn-primary"
-                onClick={() => {
-                  alert("Test ride requested — demo only");
-                  setRideBooking(null);
-                }}
-              >
-                Request Ride
-              </button>
-            </div>
-          </div>
+      {compareSelection.length >= 2 && (
+        <div className="compare-bar-floating">
+          <span>{compareSelection.length} bikes selected</span>
+          <button className="btn-primary" onClick={() => setCompareMode(true)}>Compare Now</button>
         </div>
       )}
 

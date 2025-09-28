@@ -1,1 +1,1 @@
-prototype references are here!!!
+prototype screenshots and video links are provided here!!!

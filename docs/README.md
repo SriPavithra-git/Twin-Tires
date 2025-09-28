@@ -1,1 +1,1 @@
-prototype references are here mkdir docs
+prototype screenshots and video links are provided here!!!

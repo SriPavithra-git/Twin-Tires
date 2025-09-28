@@ -1,38 +1,676 @@
-.App {
-  text-align: center;
+/* =========================
+   TwinTires consolidated CSS
+   Dark theme with orange accents
+   Put images in public/ and rename:
+     public/login-banner.jpg
+     public/register-banner.jpg (optional)
+   ========================= */
+
+/* Root variables */
+:root{
+  --orange: #ff6600;
+  --orange-2: #ff9a1a;
+  --muted: #8f8f8f;
+  --bg: #0d0d0d;
+  --card: #141414;
+  --glass: rgba(255,255,255,0.03);
+  --radius: 12px;
+  --shadow: 0 12px 30px rgba(0,0,0,0.5);
 }
 
-.App-logo {
-  height: 40vmin;
+/* Reset & base */
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: #fff;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow:auto; /* keep scrolling normal */
+}
+
+/* ---------- NAVBAR (shared) ---------- */
+.tt-nav{
+  position: sticky; top:0; z-index:120;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 20px; gap:12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.95));
+  border-bottom: 1px solid rgba(255,102,0,0.06);
+}
+.nav-left, .nav-right { display:flex; align-items:center; gap:12px; }
+.nav-logo { height:44px; width:auto; display:block; }
+.brand { font-weight:800; font-size:20px; color: var(--orange); letter-spacing:0.2px; }
+.nav-center { flex:1; display:flex; justify-content:center; padding:0 12px; }
+.nav-center input{
+  width:60%; max-width:560px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:2px solid rgba(255,102,0,0.18);
+  background:#111;
+  color:#fff;
+}
+.nav-right .nav-btn{
+  background:transparent;
+  border:2px solid var(--orange);
+  color:var(--orange);
+  padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer;
+}
+.nav-right .nav-btn:hover{ background:var(--orange); color:#000; transform:translateY(-2px) }
+
+/* hamburger */
+.hamburger{ font-size:20px; background:none; border:none; color:var(--orange); cursor:pointer; }
+
+/* ---------- VOICE ASSISTANT ---------- */
+.voice-assistant-btn{
+  position: fixed; bottom:20px; right:20px;
+  background: var(--orange); color:#111; border:none;
+  width:60px;height:60px;border-radius:50%; font-size:26px; cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,0.45); z-index:120;
+}
+
+/* ---------- BUY BIKES PAGE ---------- */
+.buy-page{ padding-top:80px; min-height:100vh; background:var(--bg); color:#fff; }
+
+/* Filter drawer (right) */
+.buy-filters-column{
+  position: fixed; top:0; right:-320px;
+  width:300px; height:100%; padding:22px;
+  background:#111; border-left:1px solid rgba(255,102,0,0.04);
+  box-shadow:-12px 0 40px rgba(0,0,0,0.6); transition:right .32s ease; z-index:110;
+}
+.buy-filters-column.show{ right:0; }
+.buy-filters-column h3{ color:var(--orange); margin:0 0 14px; font-size:18px; }
+.buy-filter-block{ margin-bottom:18px; }
+.buy-filter-block label{ display:block; color:#ffb86b; margin-bottom:8px; font-weight:700; }
+.buy-filter-block select, .buy-filter-block input{
+  width:100%; padding:10px; border-radius:8px; background:#0f0f0f; border:1px solid rgba(255,255,255,0.04); color:#fff;
+}
+
+/* Improved medium-card grid (centered) */
+.buy-bike-grid{
+  max-width:1280px; margin:0 auto; padding:22px;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px;
+}
+
+/* Card */
+.buy-bike-card{
+  background: linear-gradient(180deg, #0f0f0f, #141414);
+  border-radius:var(--radius); overflow:hidden;
+  display:flex; flex-direction:column; min-height:360px;
+  border:1px solid rgba(255,102,0,0.04); box-shadow:var(--shadow);
+  transition: transform .24s ease, box-shadow .24s ease;
+}
+.buy-bike-card:hover{ transform:translateY(-6px); box-shadow: 0 28px 50px rgba(0,0,0,0.6); }
+
+/* image area */
+.bike-img-container{ height:200px; width:100%; background:#0b0b0b; display:block; }
+.bike-img-container img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* info */
+.bike-info-card{ padding:14px 16px; display:flex; flex-direction:column; gap:8px; flex:1; text-align:left; color:#ddd; }
+.bike-info-card h3{ margin:0; color:var(--orange); font-size:1.05rem; }
+.bike-info-card .sub{ color:var(--muted); font-size:0.95rem; }
+.bike-info-card .price{ color:#ffcc00; font-weight:800; margin-top:6px; }
+
+/* specs row (small badges) */
+.bike-info-card .specs-row{ display:flex; gap:8px; flex-wrap:wrap; font-size:0.87rem; color:#bdbdbd; }
+
+/* buttons area */
+.card-buttons{ display:flex; gap:10px; justify-content:center; align-items:center; padding:12px; border-top:1px solid rgba(255,255,255,0.02); background:linear-gradient(180deg, rgba(255,255,255,0.00), rgba(255,255,255,0.01)); }
+.buy-btn-view-details, .btn-compare-card{
+  padding:9px 14px; border-radius:8px; font-weight:700; cursor:pointer; border:none;
+}
+.btn-compare-card{ background:#222; color:var(--orange); border:1px solid rgba(255,165,0,0.06); }
+.btn-compare-card.selected{ background:var(--orange); color:#111; border-color:rgba(255,165,0,0.16); }
+.buy-btn-view-details{ background: linear-gradient(180deg,var(--orange-2),var(--orange)); color:#111; box-shadow: 0 8px 20px rgba(255,140,0,0.12); }
+
+/* no results fallback */
+.buy-bike-grid .no-results{ grid-column:1/-1; text-align:center; color:#bdbdbd; padding:40px 12px; }
+
+/* ---------- BIKE DETAILS PAGE ---------- */
+.bike-details-page{ max-width:1200px; margin:20px auto; padding:18px; color:#fff; }
+.bike-top-section{ display:flex; gap:32px; flex-wrap:wrap; align-items:flex-start; }
+.bike-images{ flex:1 1 420px; max-width:520px; }
+.main-bike-img{ width:100%; border-radius:14px; display:block; object-fit:cover; }
+.thumbnails{ display:flex; gap:10px; margin-top:10px; }
+.thumbnails img{ width:68px; height:46px; object-fit:cover; border-radius:6px; cursor:pointer; border:2px solid transparent; }
+.thumbnails img.active{ border-color:var(--orange); }
+
+/* summary column */
+.bike-summary{ flex:1 1 420px; max-width:620px; display:flex; flex-direction:column; gap:12px; }
+.bike-title{ color:var(--orange); font-size:1.8rem; margin:0; }
+.bike-price{ color:#ffcc00; font-weight:800; font-size:1.3rem; margin:0; }
+.bike-fuel-mileage, .bike-description{ color:#cfcfcf; }
+
+/* action btns */
+.action-buttons{ display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
+.buy-btn{ background:var(--orange); color:#111; padding:10px 18px; border-radius:10px; border:none; font-weight:700; }
+.compare-btn{ background:#222; color:var(--orange); padding:10px 18px; border-radius:10px; border:1px solid rgba(255,165,0,0.06); }
+
+/* sections */
+.section-card{ background:#111; padding:18px; border-radius:12px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.02); }
+.section-strip{ display:inline-block; padding:8px 12px; border-radius:8px; background: linear-gradient(90deg,var(--orange),#ffcc66); color:#111; font-weight:700; }
+
+/* EMI form */
+.emi-inputs{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
+.emi-inputs input{ padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:#0f0f0f; color:#fff; width:160px; }
+
+/* reviews */
+.review-card{ background:#111; border-radius:10px; padding:12px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.02); }
+.stars{ color:#ffcc00; font-weight:700; }
+
+/* compare modal / inline compare */
+.compare-bar-floating{ position:fixed; left:50%; transform:translateX(-50%); bottom:18px; background:#111; border:2px solid var(--orange); padding:10px 14px; border-radius:12px; display:flex; gap:12px; align-items:center; z-index:160; box-shadow:var(--shadow); width:min(980px, calc(100% - 32px)); }
+.compare-card{ background:#fff; color:#111; padding:12px; border-radius:10px; }
+
+/* ---------- COMPARE PAGE ---------- */
+.compare-page{ max-width:1200px; margin:20px auto; padding:20px; }
+.compare-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+.compare-card{ background:#fff; color:#111; border-radius:10px; padding:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
+
+/* ---------- FOOTER ---------- */
+.footer{ background:#0b0b0b; color:#ddd; padding:50px 12px; }
+.footer-container{ max-width:1200px; margin:0 auto; display:flex; gap:22px; flex-wrap:wrap; justify-content:space-between; }
+.footer-section{ background:#101010; border-radius:10px; padding:16px; flex:1 1 220px; min-height:120px; border:1px solid rgba(255,102,0,0.04); }
+.footer-section h3{ color:var(--orange); margin:0 0 8px; font-size:1.1rem; }
+.footer-bottom{ text-align:center; padding-top:18px; color:#9a9a9a; border-top:1px solid rgba(255,255,255,0.02); margin-top:24px; }
+
+/* ---------- LOGIN / REGISTER (landing page theme, professional) ---------- */
+.login-container, .register-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Background images from public/Assets folder */
+.login-container { background-image: url('Assets/login-banner.jpg'); }
+.register-container { background-image: url('Assets/login-banner.jpg'); }
+
+/* Dark overlay for better contrast */
+.login-container::before, .register-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.75));
+  z-index: 1;
+}
+
+/* Card styling */
+.login-card, .register-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  background-color: #1c1c1c; /* Dark grey */
+  padding: 36px 32px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  border: 2px solid #FF7F3F; /* Soft orange */
+  color: #f0f0f0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.login-card:hover, .register-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 25px 70px rgba(0,0,0,0.65);
+}
+
+/* Heading */
+.login-card h2, .register-card h2 {
+  color: #FF6F00; /* Bold orange */
+  font-size: 26px;
+  margin-bottom: 18px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Input Groups */
+.input-group {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid #444; /* Darker grey border */
+  background-color: #121212; /* Almost black */
+  color: #f0f0f0;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #FF6F00; /* Orange focus */
+  box-shadow: 0 0 8px rgba(255, 111, 0, 0.5);
+}
+
+/* Labels */
+.input-group label {
+  position: absolute;
+  left: 16px;
+  top: -10px;
+  background: #1c1c1c;
+  padding: 0 5px;
+  font-size: 12px;
+  color: #FF944D;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+/* Floating label effect */
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -16px;
+  font-size: 11px;
+  color: #FF6F00;
+  font-weight: 500;
+}
+
+/* Buttons */
+.login-card button, .register-card button {
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  border-radius: 10px;
+  background-color: #FF6F00; /* Orange button */
+  color: #121212; /* Dark text */
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-card button:hover, .register-card button:hover {
+  background-color: #FF944D;
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(255, 111, 0, 0.5);
+}
+
+/* Google Sign-In Button */
+.google-signin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 0;
+  margin-top: 18px;
+  border-radius: 10px;
+  background-color: #121212;
+  color: #f0f0f0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid #444;
+}
+
+.google-signin img {
+  width: 20px;
+  height: 20px;
+}
+
+.google-signin:hover {
+  background-color: #1c1c1c;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* "Or" separator */
+.or-separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.or-separator::before,
+.or-separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #444;
+}
+
+.or-separator span {
+  margin: 0 10px;
+  color: #888;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Extra links */
+.extra-links {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.extra-links a {
+  color: #FF944D;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.extra-links a:hover {
+  text-decoration: underline;
+  color: #FF6F00;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card, .register-card {
+    padding: 28px 20px;
+  }
+}
+/* ---------- REGISTER PAGE (landing page theme, compact container) ---------- */
+.register-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* full viewport but content-centered */
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url('Assets/login-banner.jpg'); /* same banner as login */
+}
+
+/* Dark overlay for contrast */
+.register-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.7));
+  z-index: 1;
+}
+
+/* Compact Card Styling */
+.register-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  background-color: #1b1b1b; /* Dark grey card */
+  padding: 32px 28px; /* Less padding top/bottom */
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+  border: 2px solid #FF944D; /* Orange border */
+  color: #f0f0f0;
+  text-align: center;
+  max-height: auto; /* allow card height to fit content */
+  overflow: hidden;
+}
+
+/* Heading */
+.register-card h2 {
+  color: #FF6F00; /* Orange heading */
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+/* Input Groups */
+.input-group {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #555555;
+  background-color: #0C0C0C;
+  color: #f0f0f0;
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-group input:focus {
+  border-color: #FF6F00;
+  box-shadow: 0 0 8px rgba(255,111,0,0.5);
+}
+
+/* Labels */
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: -8px;
+  background: #1b1b1b;
+  padding: 0 6px;
+  font-size: 12px;
+  color: #FF944D;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Buttons */
+.register-card button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #FF6F00;
+  color: #0C0C0C;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.register-card button:hover {
+  background-color: #FF944D;
+}
+
+/* Google Sign-In */
+.google-signin {
+  width: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #555555;
+  background-color: #0C0C0C;
+  color: #f0f0f0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.App-link {
-  color: #61dafb;
+.google-signin img {
+  width: 20px;
+  height: 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.google-signin:hover {
+  background-color: #1b1b1b;
+  box-shadow: 0 4px 12px rgba(255,111,0,0.4);
+}
+
+/* OR Separator */
+.or-separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.or-separator::before,
+.or-separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #555555;
+}
+
+.or-separator span {
+  margin: 0 10px;
+  color: #888;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Extra Links */
+.extra-links {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.extra-links a {
+  color: #FF944D;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.extra-links a:hover {
+  color: #FF6F00;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 24px 20px;
   }
-  to {
-    transform: rotate(360deg);
-  }
+}/* ---------- SELL BIKES PAGE DARK THEME ---------- */
+
+/* Page Background */
+.sell-bikes-bgpage {
+  background-color: #0C0C0C; /* Pure dark black */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #f0f0f0; /* Default text color */
+}
+
+/* Form Container */
+.sell-bikes-page {
+  background-color: #1b1b1b; /* Dark grey card */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+  width: 100%;
+  max-width: 1000px;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Page Heading */
+.sell-bikes-page h2 {
+  text-align: center;
+  color: #FF6F00; /* Orange heading */
+  font-size: 2rem;
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.sell-bikes-page h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #FF944D; /* Accent underline */
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* Form Styling */
+.sell-bikes-form {
+  background-color: #0C0C0C; /* Black form background */
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Form Section Headings */
+.sell-bikes-form h3 {
+  margin-bottom: 12px;
+  color: #FF944D; /* Orange headings */
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* Inputs, Select, Textarea */
+.sell-bikes-form input,
+.sell-bikes-form select,
+.sell-bikes-form textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #555555; /* Grey border */
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #1b1b1b; /* Dark grey input background */
+  color: #f0f0f0; /* White text */
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.sell-bikes-form input:focus,
+.sell-bikes-form select:focus,
+.sell-bikes-form textarea:focus {
+  outline: none;
+  border-color: #FF6F00; /* Orange focus */
+  box-shadow: 0 0 8px rgba(255, 111, 0, 0.5);
+}
+
+.sell-bikes-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Submit Button */
+.sell-bikes-form button {
+  background-color: #FF6F00; /* Orange button */
+  color: #0C0C0C; /* Black text */
+  padding: 14px 20px;
+  border: 1px solid #FF5900;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.sell-bikes-form button:hover {
+  background-color: #FF944D; /* Lighter orange on hover */
+  transform: scale(1.05);
+  color: #0C0C0C;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(15px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1100px){
+  .sell-bikes-page { padding: 30px 20px; }
+}
+
+@media (max-width: 768px){
+  .sell-bikes-page { padding: 25px 15px; width: 90%; }
 }

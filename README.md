@@ -98,7 +98,7 @@ We will not only meet the base requirements of the problem statement but also ex
 
 ## 👩‍💻 **Team Contributions**
 
-### **Samreen Banu – Frontend Developer**
+### **Samreen Banu – Frontend Developer**(Team Lead)
 - Will build modular React components for browsing and searching two-wheelers.  
 - Will implement search and filtering features for accurate and fast results.  
 - Will integrate frontend components with backend APIs to display dynamic data.  

@@ -18,10 +18,10 @@ public class Bike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int Long;
+    private long BikeId;
 
     @ManyToOne
-    @JoinColumn(name = "id",nullable = false)
+    @JoinColumn(name = "UserId",nullable = false)
     private User seller;
 
     @Column(nullable = false)

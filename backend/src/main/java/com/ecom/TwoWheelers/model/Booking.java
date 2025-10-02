@@ -17,14 +17,14 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long BookingId;
 
     @ManyToOne
-    @JoinColumn(name="id",nullable = false)
+    @JoinColumn(name="UserId",nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "id",nullable = false)
+    @JoinColumn(name = "BikeId",nullable = false)
     private Bike bike;
 
     @Enumerated(EnumType.STRING)

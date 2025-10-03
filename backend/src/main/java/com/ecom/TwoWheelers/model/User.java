@@ -1,6 +1,5 @@
 package com.ecom.TwoWheelers.model;
 
-
 import com.ecom.TwoWheelers.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,15 +12,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long UserId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;   // <- rename from UserId to id
 
     private String name;
 
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
-    private String phno;
+
+    private String phone;
+    private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role=Role.BUYER;
+    private Role role = Role.BUYER;
 }

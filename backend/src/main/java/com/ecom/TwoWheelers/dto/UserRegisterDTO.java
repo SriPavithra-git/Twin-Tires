@@ -4,7 +4,7 @@ import com.ecom.TwoWheelers.enums.Role;
 import lombok.Data;
 
 @Data
-public class Userdto {
+public class UserRegisterDTO {
     private String name;
     private String phone;
     private String email;

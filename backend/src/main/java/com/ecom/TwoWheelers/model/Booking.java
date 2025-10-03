@@ -17,7 +17,7 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long BookingId;
+    private Long BookingId;
 
     @ManyToOne
     @JoinColumn(name="UserId",nullable = false)

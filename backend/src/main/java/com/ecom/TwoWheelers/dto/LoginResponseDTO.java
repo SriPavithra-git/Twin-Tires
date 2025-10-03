@@ -4,7 +4,7 @@ import com.ecom.TwoWheelers.enums.Role;
 import lombok.Data;
 
 @Data
-public class LoginResponse {
+public class LoginResponseDTO {
     private String name;
     private Role role;
     private String message;

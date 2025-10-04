@@ -18,4 +18,7 @@ public class BikeRequestDTO {
     private String engineCapacity;
     private Integer year;
     private String description;
+    private Integer ownerType;
+    private String city;
+    private String condition;
 }

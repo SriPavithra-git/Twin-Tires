@@ -40,6 +40,10 @@ public class BikeService {
         bike.setMileage(dto.getMileage());
         bike.setEngineCapacity(dto.getEngineCapacity());
         bike.setDescription(dto.getDescription());
+        bike.setOwnerType(dto.getOwnerType());
+        bike.setCity(dto.getCity());
+        bike.setCondition(dto.getCondition());
+
 
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile file : images) {
@@ -68,6 +72,10 @@ public class BikeService {
         bike.setMileage(dto.getMileage());
         bike.setEngineCapacity(dto.getEngineCapacity());
         bike.setDescription(dto.getDescription());
+        bike.setOwnerType(dto.getOwnerType());
+        bike.setCity(dto.getCity());
+        bike.setCondition(dto.getCondition());
+
 
         // Upload new images if provided
         if (newImages != null && !newImages.isEmpty()) {

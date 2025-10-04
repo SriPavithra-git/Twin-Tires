@@ -53,4 +53,10 @@ public class Bike {
 
     @ElementCollection
     private List<String> imageUrls;
+
+    private Integer ownerType;
+    private String city;
+    private String condition;
+
+
 }

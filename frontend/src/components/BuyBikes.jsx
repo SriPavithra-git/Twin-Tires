@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SAMPLE_BIKES } from "./BikeData";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar"; // ← if this file is in pages/, use ../components/Navbar
+import Navbar from "./Navbar";
 
 function currency(x) {
   return x.toLocaleString("en-IN", {
@@ -19,7 +19,6 @@ export default function BuyBikes() {
   const filterRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close filters when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (filterRef.current && !filterRef.current.contains(e.target)) {
@@ -60,11 +59,10 @@ export default function BuyBikes() {
       <Navbar />
 
       {/* Header bar */}
-      <div className="max-w-6xl mx-auto px-4 md:px-6 pt-6 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-6 flex items-center justify-between gap-3">
         <h1 className="text-xl font-bold text-[#ff6600]">Buy Bikes</h1>
 
         <div className="flex items-center gap-3">
-          {/* Filters Button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="bg-gradient-to-r from-[#ff6600] to-[#ff8533]
@@ -76,7 +74,6 @@ export default function BuyBikes() {
             Filters
           </button>
 
-          {/* Compare Button */}
           {compareSet.length > 1 && (
             <button
               onClick={goToCompare}
@@ -132,9 +129,9 @@ export default function BuyBikes() {
         </div>
       </aside>
 
-      {/* Bikes Grid */}
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Bikes Grid — 1 / 2 / 3 / 4 cols */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredBikes.length > 0 ? (
             filteredBikes.map((b) => (
               <div
@@ -161,9 +158,7 @@ export default function BuyBikes() {
                   </p>
                 </div>
 
-                {/* Buttons */}
                 <div className="flex gap-3 justify-center p-3 border-t border-[rgba(255,255,255,0.05)] bg-[linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,0.01))]">
-                  {/* Compare toggle */}
                   <button
                     onClick={() => toggleCompare(b.id)}
                     className={`rounded-lg font-semibold px-3 py-2 text-sm transition-all duration-300 ${
@@ -175,7 +170,6 @@ export default function BuyBikes() {
                     {compareSet.includes(b.id) ? "Deselect" : "Compare"}
                   </button>
 
-                  {/* View Details */}
                   <button
                     onClick={() => navigate(`/bike/${b.id}`)}
                     className="bg-gradient-to-r from-[#ff6600] to-[#ff8533]

@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name="users")
 @NoArgsConstructor
@@ -27,4 +29,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.BUYER;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Address> addresses;
+
 }

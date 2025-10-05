@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import PromoCard from "./PromoCard";
 import BrandsGrid from "./BrandsGrid";
-import "../TwinTiresLanding.css";
 
 const topOffers = [
   { id: 1, title: "Festive Offer: Up to 20% OFF", subtitle: "On select Royal Enfield models", img: "royal&field.jpeg" },
@@ -20,64 +19,87 @@ export default function PromotionsSection({ onCategorySelect = () => {}, onWishl
   const [offerIndex, setOfferIndex] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setOfferIndex(i => (i + 1) % topOffers.length), 4500);
+    const t = setInterval(() => setOfferIndex((i) => (i + 1) % topOffers.length), 4500);
     return () => clearInterval(t);
   }, []);
 
+  const activeOffer = topOffers[offerIndex];
+
   return (
-    <section className="promotions-wrap">
-      {/* Top offers carousel */}
-      <div className="offers-row">
-        <div className="offers-left">
-          <div className="offers-header">
-            <h2>Top Offers</h2>
-            <div className="muted">Grab limited-time deals</div>
+    <section className="bg-black px-5 py-7 md:px-12">
+      {/* Top offers + price drops row */}
+      <div className="mb-6 flex flex-col gap-5 lg:flex-row">
+        {/* Left: Top Offers */}
+        <div className="flex-1">
+          <div className="mb-3">
+            <h2 className="m-0 text-[22px] font-semibold text-white">Top Offers</h2>
+            <div className="text-sm text-white/80">Grab limited-time deals</div>
           </div>
 
-          <div className="offer-card" style={{ backgroundImage: `url(${topOffers[offerIndex].img})` }}>
-            <div className="offer-overlay">
-              <h3>{topOffers[offerIndex].title}</h3>
-              <p className="muted">{topOffers[offerIndex].subtitle}</p>
-              <div style={{ marginTop: 12 }}>
-                <button className="btn-primary">Explore Offer</button>
-                <button className="btn-outline" style={{ marginLeft: 8 }}>Notify Me</button>
+          <div
+            className="relative flex h-[340px] items-end overflow-hidden rounded-[12px] bg-cover bg-center shadow-[0_14px_40px_rgba(154,96,2,0.12)] sm:h-[300px] md:h-[340px]"
+            style={{ backgroundImage: `url(${activeOffer.img})` }}
+          >
+            <div className="w-full bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.45)_25%,rgba(0,0,0,0.75)_100%)] p-5 text-white">
+              <h3 className="mb-1 text-xl font-semibold">{activeOffer.title}</h3>
+              <p className="text-sm text-white/80">{activeOffer.subtitle}</p>
+              <div className="mt-3 flex gap-2">
+                <button className="rounded-md bg-[linear-gradient(180deg,#ff9a1a,#ff6600)] px-4 py-2 font-bold text-[#111] shadow-[0_8px_20px_rgba(255,140,0,0.12)] transition hover:brightness-105">
+                  Explore Offer
+                </button>
+                <button className="rounded-md border-2 border-[#ff6600] px-4 py-2 font-semibold text-[#ff6600] transition hover:-translate-y-0.5 hover:bg-[#ff6600] hover:text-white hover:shadow-[0_6px_12px_rgba(255,102,0,0.4)]">
+                  Notify Me
+                </button>
               </div>
             </div>
           </div>
 
-          {/* small indicator */}
-          <div className="offer-indicators">
+          {/* Indicators */}
+          <div className="mt-3 flex gap-2">
             {topOffers.map((_, i) => (
-              <button key={i} className={`small-dot ${i === offerIndex ? "active" : ""}`} onClick={() => setOfferIndex(i)} />
+              <button
+                key={i}
+                onClick={() => setOfferIndex(i)}
+                className={`h-[10px] w-[10px] rounded-full ${
+                  i === offerIndex ? "bg-[#ff6600] shadow-[0_6px_18px_rgba(255,102,0,0.18)]" : "bg-white/35"
+                }`}
+                aria-label={`Go to offer ${i + 1}`}
+              />
             ))}
           </div>
         </div>
 
-        {/* Price drops grid */}
-        <div className="offers-right">
-          <h3>Price Drops</h3>
-          <div className="price-drop-grid">
-            {priceDrops.map(p => (
+        {/* Right: Price Drops */}
+        <aside className="w-full lg:w-[360px]">
+          <h3 className="mb-3 text-lg font-semibold text-white">Price Drops</h3>
+          <div className="flex flex-col gap-3">
+            {priceDrops.map((p) => (
               <PromoCard key={p.id} promo={p} onWishlist={() => onWishlist(p)} />
             ))}
           </div>
-        </div>
+        </aside>
       </div>
 
       {/* Brands to explore */}
-      <div className="brands-section">
-        <div className="brands-header">
-          <h2>Brands to Explore</h2>
-          <div className="muted">Popular manufacturers & trending collections</div>
+      <div className="mt-4">
+        <div className="mb-3 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-end">
+          <h2 className="m-0 text-[20px] font-semibold text-[#ff6600]">Brands to Explore</h2>
+          <div className="text-sm text-white/70">Popular manufacturers &amp; trending collections</div>
         </div>
         <BrandsGrid onSelect={(id) => onCategorySelect(id)} />
       </div>
 
-      {/* Small strip for trending discounts */}
-      <div className="trending-strip">
-        <div className="trending-item">🔥 Flash Sale: Bajaj — ₹15,000 off for today only</div>
-        <div className="trending-item">⭐ New Arrivals: 2023 electric scooters</div>
-        <div className="trending-item">💥 Exchange boost: Extra ₹5,000 on older bikes</div>
+      {/* Trending strip */}
+      <div className="mt-4 flex gap-3 overflow-x-auto px-1 py-2">
+        <div className="whitespace-nowrap rounded-full border border-[rgba(255,102,0,0.3)] bg-[linear-gradient(90deg,rgba(255,102,0,0.2),rgba(255,102,0,0.05))] px-4 py-2 font-bold text-[#ff6600] shadow-[0_0_0] transition hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(255,102,0,0.25)]">
+          🔥 Flash Sale: Bajaj — ₹15,000 off for today only
+        </div>
+        <div className="whitespace-nowrap rounded-full border border-[rgba(255,102,0,0.3)] bg-[linear-gradient(90deg,rgba(255,102,0,0.2),rgba(255,102,0,0.05))] px-4 py-2 font-bold text-[#ff6600]">
+          ⭐ New Arrivals: 2023 electric scooters
+        </div>
+        <div className="whitespace-nowrap rounded-full border border-[rgba(255,102,0,0.3)] bg-[linear-gradient(90deg,rgba(255,102,0,0.2),rgba(255,102,0,0.05))] px-4 py-2 font-bold text-[#ff6600]">
+          💥 Exchange boost: Extra ₹5,000 on older bikes
+        </div>
       </div>
     </section>
   );

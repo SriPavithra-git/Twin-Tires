@@ -3,6 +3,8 @@ package com.ecom.TwoWheelers.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ecom.TwoWheelers.dto.BikeRequestDTO;
+import com.ecom.TwoWheelers.dto.SellBikeRequestDTO;
+import com.ecom.TwoWheelers.enums.BikeStatus;
 import com.ecom.TwoWheelers.enums.BikeType;
 import com.ecom.TwoWheelers.enums.FuelType;
 import com.ecom.TwoWheelers.exception.ResourceNotFoundException;
@@ -165,5 +167,49 @@ public class BikeService {
 
         return bikeRepository.findAll(spec, sort);
     }
+    public Bike sellUsedBike(SellBikeRequestDTO dto) {
+        User buyer = userRepository.findById(dto.getBuyerId())
+                .orElseThrow(() -> new RuntimeException("Buyer not found"));
+
+        Bike bike = Bike.builder()
+                .seller(buyer)
+                .brand(dto.getBrand())
+                .model(dto.getModel())
+                .price(dto.getPrice())
+                .fuelType(dto.getFuelType())
+                .mileage(dto.getMileage())
+                .engineCapacity(dto.getEngineCapacity())
+                .year(dto.getYear())
+                .description(dto.getDescription())
+                .ownerType(dto.getOwnerType())
+                .city(dto.getCity())
+                .condition(dto.getCondition())
+                .imageUrls(dto.getImageUrls())
+                .isUsed(true)
+                .sellerType("Individual")
+                .type(BikeType.USED)
+                .status(BikeStatus.AVAILABLE)
+                .build();
+
+        return bikeRepository.save(bike);
+    }
+
+    // 🔹 View all bikes listed by this buyer
+    public List<Bike> getUsedBikesByBuyer(Long buyerId) {
+        return bikeRepository.findBySellerIdAndIsUsedTrue(buyerId);
+    }
+
+    // 🔹 Delete a used bike
+    public void deleteUsedBike(Long bikeId, Long buyerId) {
+        Bike bike = bikeRepository.findById(bikeId)
+                .orElseThrow(() -> new RuntimeException("Bike not found"));
+
+        if (!bike.getSeller().getId().equals(buyerId)) {
+            throw new RuntimeException("You cannot delete another user's bike!");
+        }
+
+        bikeRepository.delete(bike);
+    }
+
 
 }

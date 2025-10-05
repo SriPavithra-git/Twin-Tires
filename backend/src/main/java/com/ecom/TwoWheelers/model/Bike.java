@@ -59,5 +59,8 @@ public class Bike {
     @Column(name = "Bike_condition")
     private String condition;
 
+    private boolean isUsed;         // 👈 new field
+    private String sellerType;
+
 
 }

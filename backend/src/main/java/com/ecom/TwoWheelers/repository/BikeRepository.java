@@ -12,4 +12,6 @@ public interface BikeRepository extends JpaRepository<Bike, Long> , JpaSpecifica
 
     // Fetch bikes by seller
     List<Bike> findBySellerId(Long sellerId);  // Now works because User.id exists
+
+    List<Bike> findBySellerIdAndIsUsedTrue(Long buyerId);
 }

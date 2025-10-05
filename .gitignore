@@ -23,3 +23,7 @@
 hs_err_pid*
 replay_pid*
 .env
+
+backend/src/main/resources/application.properties
+
+

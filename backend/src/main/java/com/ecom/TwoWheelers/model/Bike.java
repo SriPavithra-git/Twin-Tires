@@ -56,6 +56,7 @@ public class Bike {
 
     private Integer ownerType;
     private String city;
+    @Column(name = "Bike_condition")
     private String condition;
 
 

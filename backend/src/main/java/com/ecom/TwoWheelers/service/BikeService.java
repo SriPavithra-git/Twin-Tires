@@ -3,12 +3,17 @@ package com.ecom.TwoWheelers.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ecom.TwoWheelers.dto.BikeRequestDTO;
+import com.ecom.TwoWheelers.enums.BikeType;
+import com.ecom.TwoWheelers.enums.FuelType;
 import com.ecom.TwoWheelers.exception.ResourceNotFoundException;
 import com.ecom.TwoWheelers.model.Bike;
 import com.ecom.TwoWheelers.model.User;
 import com.ecom.TwoWheelers.repository.BikeRepository;
 import com.ecom.TwoWheelers.repository.UserRepository;
+import com.ecom.TwoWheelers.specifications.BikeSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -123,4 +128,42 @@ public class BikeService {
     public List<Bike> getBikesBySeller(Long sellerId) {
         return bikeRepository.findBySellerId(sellerId);
     }
+
+    public List<Bike> searchFilterSort(
+            String brand,
+            String model,
+            String city,
+            FuelType fuelType,
+            Double minPrice,
+            Double maxPrice,
+            String mileage,
+            String engineCapacity,
+            Integer year,
+            BikeType type,
+            Integer ownerType,
+            String condition,
+            String sortBy,
+            String sortDirection
+    ) {
+        Specification<Bike> spec = Specification.allOf(
+                BikeSpecification.hasBrand(brand),
+                BikeSpecification.hasModel(model),
+                BikeSpecification.hasCity(city),
+                BikeSpecification.hasFuelType(fuelType),
+                BikeSpecification.hasPriceBetween(minPrice, maxPrice),
+                BikeSpecification.hasMileage(mileage),
+                BikeSpecification.hasEngineCapacity(engineCapacity),
+                BikeSpecification.hasYear(year),
+                BikeSpecification.hasType(type),
+                BikeSpecification.hasOwnerType(ownerType),
+                BikeSpecification.hasCondition(condition)
+        );
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy == null ? "price" : sortBy);
+        if ("desc".equalsIgnoreCase(sortDirection)) {
+            sort = Sort.by(Sort.Direction.DESC, sortBy == null ? "price" : sortBy);
+        }
+
+        return bikeRepository.findAll(spec, sort);
+    }
+
 }

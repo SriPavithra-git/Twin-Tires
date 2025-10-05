@@ -1,6 +1,8 @@
 package com.ecom.TwoWheelers.controllers;
 
 import com.ecom.TwoWheelers.dto.BikeRequestDTO;
+import com.ecom.TwoWheelers.enums.BikeType;
+import com.ecom.TwoWheelers.enums.FuelType;
 import com.ecom.TwoWheelers.model.Bike;
 import com.ecom.TwoWheelers.service.BikeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,4 +61,28 @@ public class BikeController {
     public ResponseEntity<List<Bike>> getBikesBySeller(@PathVariable Long sellerId) {
         return ResponseEntity.ok(bikeService.getBikesBySeller(sellerId));
     }
+
+    @GetMapping("/search")
+    public List<Bike> searchFilterSort(
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) FuelType fuelType,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String mileage,
+            @RequestParam(required = false) String engineCapacity,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) BikeType type,
+            @RequestParam(required = false) Integer ownerType,
+            @RequestParam(required = false) String condition,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sortDirection
+    ) {
+        return bikeService.searchFilterSort(
+                brand, model, city, fuelType, minPrice, maxPrice,
+                mileage, engineCapacity, year, type, ownerType, condition, sortBy, sortDirection
+        );
+    }
+
 }

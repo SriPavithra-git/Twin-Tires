@@ -8,9 +8,9 @@ import com.ecom.TwoWheelers.enums.BikeStatus;
 import com.ecom.TwoWheelers.enums.BikeType;
 import com.ecom.TwoWheelers.enums.FuelType;
 import com.ecom.TwoWheelers.exception.ResourceNotFoundException;
-import com.ecom.TwoWheelers.model.Bike;
+import com.ecom.TwoWheelers.model.UsedBike;
 import com.ecom.TwoWheelers.model.User;
-import com.ecom.TwoWheelers.repository.BikeRepository;
+import com.ecom.TwoWheelers.repository.UsedBikeRepository;
 import com.ecom.TwoWheelers.repository.UserRepository;
 import com.ecom.TwoWheelers.specifications.BikeSpecification;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +28,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BikeService {
 
-    private final BikeRepository bikeRepository;
+    private final UsedBikeRepository bikeRepository;
     private final UserRepository userRepository;
     private final Cloudinary cloudinary;
 
     // Add new bike with image
-    public Bike addBikeWithImages(BikeRequestDTO dto, List<MultipartFile> images) throws IOException {
+    public UsedBike addBikeWithImages(BikeRequestDTO dto, List<MultipartFile> images) throws IOException {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with ID: " + dto.getSellerId()));
 
-        Bike bike = new Bike();
+        UsedBike bike = new UsedBike();
         bike.setSeller(seller);
         bike.setBrand(dto.getBrand());
         bike.setModel(dto.getModel());
@@ -67,8 +67,8 @@ public class BikeService {
 
     // Update existing bike
 // Update existing bike
-    public Bike updateBike(Long bikeId, BikeRequestDTO dto, List<MultipartFile> newImages) throws IOException {
-        Bike bike = bikeRepository.findById(bikeId)
+    public UsedBike updateBike(Long bikeId, BikeRequestDTO dto, List<MultipartFile> newImages) throws IOException {
+        UsedBike bike = bikeRepository.findById(bikeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bike not found with ID: " + bikeId));
 
         bike.setBrand(dto.getBrand());
@@ -102,7 +102,7 @@ public class BikeService {
 
     // Delete bike and all associated images from Cloudinary
     public void deleteBike(Long bikeId) {
-        Bike bike = bikeRepository.findById(bikeId)
+        UsedBike bike = bikeRepository.findById(bikeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bike not found with ID: " + bikeId));
 
         // Delete all images from Cloudinary
@@ -122,16 +122,16 @@ public class BikeService {
     }
 
     // Get all bikes
-    public List<Bike> getAllBikes() {
+    public List<UsedBike> getAllBikes() {
         return bikeRepository.findAll();
     }
 
     // Get bikes by seller
-    public List<Bike> getBikesBySeller(Long sellerId) {
+    public List<UsedBike> getBikesBySeller(Long sellerId) {
         return bikeRepository.findBySellerId(sellerId);
     }
 
-    public List<Bike> searchFilterSort(
+    public List<UsedBike> searchFilterSort(
             String brand,
             String model,
             String city,
@@ -147,7 +147,7 @@ public class BikeService {
             String sortBy,
             String sortDirection
     ) {
-        Specification<Bike> spec = Specification.allOf(
+        Specification<UsedBike> spec = Specification.allOf(
                 BikeSpecification.hasBrand(brand),
                 BikeSpecification.hasModel(model),
                 BikeSpecification.hasCity(city),
@@ -167,11 +167,11 @@ public class BikeService {
 
         return bikeRepository.findAll(spec, sort);
     }
-    public Bike sellUsedBike(SellBikeRequestDTO dto) {
+    public UsedBike sellUsedBike(SellBikeRequestDTO dto) {
         User buyer = userRepository.findById(dto.getBuyerId())
                 .orElseThrow(() -> new RuntimeException("Buyer not found"));
 
-        Bike bike = Bike.builder()
+        UsedBike bike = UsedBike.builder()
                 .seller(buyer)
                 .brand(dto.getBrand())
                 .model(dto.getModel())
@@ -195,13 +195,13 @@ public class BikeService {
     }
 
     // 🔹 View all bikes listed by this buyer
-    public List<Bike> getUsedBikesByBuyer(Long buyerId) {
+    public List<UsedBike> getUsedBikesByBuyer(Long buyerId) {
         return bikeRepository.findBySellerIdAndIsUsedTrue(buyerId);
     }
 
     // 🔹 Delete a used bike
     public void deleteUsedBike(Long bikeId, Long buyerId) {
-        Bike bike = bikeRepository.findById(bikeId)
+        UsedBike bike = bikeRepository.findById(bikeId)
                 .orElseThrow(() -> new RuntimeException("Bike not found"));
 
         if (!bike.getSeller().getId().equals(buyerId)) {

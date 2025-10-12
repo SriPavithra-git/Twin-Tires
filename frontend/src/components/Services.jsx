@@ -1,19 +1,45 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const servicesData = [
-  { id: 1, title: "Pre-Test Ride Booking", subtitle: "Book your ride in advance", icon: "/testride.jpg" },
-  { id: 2, title: "Bike Servicing", subtitle: "Maintenance & repair", icon: "/bikeservice.webp" },
-  { id: 3, title: "Accessories", subtitle: "Helmets, gears & more", icon: "/accessories.jpg" },
-  { id: 4, title: "Insurance", subtitle: "Protect your bike", icon: "/insurance.jpg" },
+  {
+    id: 1,
+    title: "Pre-Test Ride Booking",
+    subtitle: "Book your ride in advance",
+    icon: "/testride.jpg",
+    link: "/test-ride",
+  },
+  {
+    id: 2,
+    title: "Bike Servicing",
+    subtitle: "Maintenance & repair",
+    icon: "/bikeservice.webp",
+    link: "/bike-servicing",
+  },
+  {
+    id: 3,
+    title: "Accessories",
+    subtitle: "Helmets, gears & more",
+    icon: "/accessories.jpg",
+    link: "/accessories",
+  },
+  {
+    id: 4,
+    title: "Insurance",
+    subtitle: "Protect your bike",
+    icon: "/insurance.jpg",
+    link: "/insurance",
+  },
 ];
 
 export default function Services() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0d0d0d] text-white">
-      <Navbar />
-
+      
       {/* Hero Section */}
       <section className="text-center py-16 px-6 bg-gradient-to-b from-[#111] to-[#0d0d0d]">
         <h1 className="text-4xl font-extrabold text-[#ff6600] mb-4">
@@ -44,14 +70,19 @@ export default function Services() {
             </h3>
             <p className="text-gray-400 text-sm mb-4">{service.subtitle}</p>
 
-            <button className="w-full bg-gradient-to-b from-[#ff9a1a] to-[#ff6600] text-black font-semibold rounded-md py-2 shadow-[0_4px_10px_rgba(255,102,0,0.3)] hover:brightness-110 transition">
+            <button
+              onClick={() => {
+                if (service.link) navigate(service.link);
+              }}
+              className="w-full bg-gradient-to-b from-[#ff9a1a] to-[#ff6600] text-black font-semibold rounded-md py-2 shadow-[0_4px_10px_rgba(255,102,0,0.3)] hover:brightness-110 transition"
+            >
               Explore
             </button>
           </div>
         ))}
       </section>
 
-      <Footer />
+      
     </div>
   );
 }

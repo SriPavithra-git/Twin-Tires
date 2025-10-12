@@ -1,89 +1,208 @@
-// src/pages/BuyerDashboard.jsx
-import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import BikeCard from "../components/BikeCard";
+import React, { useEffect, useState } from "react";
+import Navbar from "./Navbar";
+import { useAuth } from "./auth";
+import api, { BargainApi } from "../lib/api";
 
 export default function BuyerDashboard() {
-  const [wishlist, setWishlist] = useState([
-    // sample bikes in wishlist
-    {
-      id: 1,
-      name: "Royal Enfield Classic 350",
-      price: "$2,200",
-      city: "New Delhi",
-      image:
-        "https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=800&q=60",
-    },
-    {
-      id: 2,
-      name: "Yamaha R15",
-      price: "$1,600",
-      city: "Chennai",
-      image:
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=60",
-    },
-  ]);
+  const { user } = useAuth();
+  const [listedBikes, setListedBikes] = useState([]);
+  const [bargains, setBargains] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [bookings] = useState([
-    { id: 1, bike: "TVS Apache RTR 160", city: "Bengaluru", date: "2025-10-01" },
-  ]);
+  // 🔹 Load seller’s listed bikes and offers
+  useEffect(() => {
+    if (!user?.id) return;
+    (async () => {
+      try {
+        setLoading(true);
+        const resBikes = await api.get(`used-bikes/seller/${user.id}`);
+        setListedBikes(resBikes.data ?? resBikes);
 
-  const toggleWishlist = (bike) => {
-    if (wishlist.find((b) => b.id === bike.id))
-      setWishlist(wishlist.filter((b) => b.id !== bike.id));
-    else setWishlist([...wishlist, bike]);
-  };
+        const resOffers = await BargainApi.getBySeller(user.id);
+        setBargains(resOffers.data ?? resOffers);
+      } catch (err) {
+        console.error("Failed to load dashboard:", err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user]);
+
+  // ✅ FIXED: Uses offer.id (number), not the entire object
+  async function handleStatusUpdate(offerId, newStatus) {
+    try {
+      console.log("Updating offer:", offerId, "status:", newStatus);
+
+      await api.put(`bargains/${offerId}?status=${newStatus}`);
+
+      setBargains((prev) =>
+        prev.map((b) =>
+          b.id === offerId ? { ...b, status: newStatus } : b
+        )
+      );
+
+      // ✅ Auto-add to cart if accepted
+      if (newStatus === "ACCEPTED") {
+        await fetch("http://localhost:8080/api/cart/add-offer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ offerId }),
+        });
+        alert("Offer accepted and bike added to cart with offer price!");
+      } else {
+        alert(`Offer ${newStatus.toLowerCase()} successfully!`);
+      }
+    } catch (err) {
+      console.error("Status update failed:", err);
+      alert("Failed to update offer status.");
+    }
+  }
+
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#0b0b0b] text-gray-400 flex items-center justify-center">
+        Loading your listings...
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <Navbar />
+    <div className="min-h-screen bg-[#0d0d0d] text-white">
+   
+      <div className="max-w-6xl mx-auto px-5 md:px-10 py-10">
+        <h1 className="text-3xl font-extrabold text-[#ff6600] mb-8">
+          My Listed Bikes
+        </h1>
 
-      <section className="mx-auto min-h-[80vh] max-w-[1280px] px-5 py-8 md:px-8">
-        {/* Wishlist */}
-        <h2 className="mb-4 text-2xl font-semibold">My Wishlist</h2>
+        {/* ---------------------- LISTED BIKES ---------------------- */}
+        {listedBikes.length === 0 ? (
+          <p className="text-gray-400 italic">
+            You haven’t listed any bikes yet.
+          </p>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {listedBikes.map((bike) => {
+              const img = bike.imageUrl
+                ? bike.imageUrl.startsWith("http")
+                  ? bike.imageUrl
+                  : `http://localhost:8080/${
+                      bike.imageUrl.startsWith("/")
+                        ? bike.imageUrl.slice(1)
+                        : bike.imageUrl
+                    }`
+                : "/placeholder-bike.jpg";
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {wishlist.length > 0 ? (
-            wishlist.map((bike) => (
-              <BikeCard
-                key={bike.id}
-                bike={bike}
-                inWishlist={true}
-                toggleWishlist={() => toggleWishlist(bike)}
-                onBook={() => {}}
-              />
-            ))
+              return (
+                <div
+                  key={bike.id}
+                  className="bg-[#111] border border-white/10 rounded-xl p-4 shadow-md hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition"
+                >
+                  <img
+                    src={img}
+                    alt={bike.model}
+                    className="w-full h-40 object-cover rounded-lg mb-3"
+                  />
+                  <h3 className="text-lg font-semibold text-[#ffb84d]">
+                    {bike.brand} {bike.model}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    ₹{bike.price?.toLocaleString("en-IN")} • {bike.city}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {bike.conditionStatus} • {bike.purchaseAge}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ---------------------- OFFERS RECEIVED ---------------------- */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-semibold text-[#ff8533] mb-5">
+            Offers Received
+          </h2>
+
+          {bargains.length === 0 ? (
+            <p className="text-gray-400 italic">No offers received yet.</p>
           ) : (
-            <p className="col-span-full rounded-md border border-white/10 bg-black/40 p-6 text-center text-[#bdbdbd]">
-              No bikes in wishlist.
-            </p>
+            <div className="overflow-x-auto bg-[#111] border border-white/10 rounded-xl shadow-md">
+              <table className="min-w-full text-sm">
+                <thead className="bg-[#1a1a1a] text-[#ffb84d] text-left">
+                  <tr>
+                    <th className="p-3">Bike</th>
+                    <th className="p-3">Buyer ID</th>
+                    <th className="p-3">Offer Price</th>
+                    <th className="p-3">Message</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bargains.map((offer) => {
+                    const relatedBike = listedBikes.find(
+                      (b) => b.id === offer.usedBikeId
+                    );
+                    return (
+                      <tr
+                        key={offer.id}
+                        className="border-t border-white/5 hover:bg-[#1a1a1a]"
+                      >
+                        <td className="p-3 text-gray-200">
+                          {relatedBike
+                            ? `${relatedBike.brand} ${relatedBike.model}`
+                            : `Bike ID ${offer.usedBikeId}`}
+                        </td>
+                        <td className="p-3 text-gray-400">{offer.buyerId}</td>
+                        <td className="p-3 text-[#ffb84d] font-semibold">
+                          ₹{offer.offerPrice?.toLocaleString("en-IN")}
+                        </td>
+                        <td className="p-3 text-gray-300 italic max-w-[300px] truncate">
+                          {offer.message || "—"}
+                        </td>
+                        <td className="p-3">
+                          <span
+                            className={`font-semibold ${
+                              offer.status === "ACCEPTED"
+                                ? "text-green-400"
+                                : offer.status === "REJECTED"
+                                ? "text-red-400"
+                                : "text-yellow-400"
+                            }`}
+                          >
+                            {offer.status || "PENDING"}
+                          </span>
+                        </td>
+                        <td className="p-3 flex gap-2 justify-center">
+                          {offer.status === "PENDING" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  handleStatusUpdate(offer.id, "ACCEPTED")
+                                }
+                                className="px-3 py-1 rounded-md bg-green-600 hover:bg-green-700 text-sm font-semibold"
+                              >
+                                Accept
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleStatusUpdate(offer.id, "REJECTED")
+                                }
+                                className="px-3 py-1 rounded-md bg-red-600 hover:bg-red-700 text-sm font-semibold"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
-
-        {/* Booked Test Rides */}
-        <h2 className="mt-10 mb-3 text-2xl font-semibold">Booked Test Rides</h2>
-        {bookings.length > 0 ? (
-          <div className="mt-2 flex flex-wrap gap-4">
-            {bookings.map((b) => (
-              <div
-                key={b.id}
-                className="w-full max-w-xs rounded-[12px] bg-[#111] p-4 shadow-[0_6px_18px_rgba(0,0,0,0.06)]"
-              >
-                <h3 className="mb-1 text-lg font-semibold">{b.bike}</h3>
-                <p className="text-sm text-[#cfcfcf]">City: {b.city}</p>
-                <p className="text-sm text-[#cfcfcf]">Date: {b.date}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="rounded-md border border-white/10 bg-black/40 p-6 text-center text-[#bdbdbd]">
-            No booked test rides.
-          </p>
-        )}
-      </section>
-
-      <Footer />
+      </div>
     </div>
   );
 }

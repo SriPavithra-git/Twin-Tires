@@ -1,27 +1,49 @@
+// src/components/Login.jsx
 import React, { useState } from "react";
-import Navbar from "./Navbar"; // adjust path if needed
+import Navbar from "./Navbar";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./auth";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [loggingInAs, setLoggingInAs] = useState("");
+  const [loggingInAs, setLoggingInAs] = useState(""); // used for overlay
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = (role) => {
-    setLoggingInAs(role);
-    setDropdownOpen(false);
+  const doLogin = async () => {
+    setLoggingInAs("User");
+    try {
+      const u = await login({ email, password }); // calls POST /login/user
+
+      // ✅ FIX: safely check role ignoring case
+      if (u?.role?.toLowerCase() === "seller") {
+        navigate("/seller-dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (e) {
+      alert(e.message || "Login failed");
+      setLoggingInAs("");
+    }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
+    // placeholder – integrate real Google later
     setLoggingInAs("Google User");
+    setTimeout(() => {
+      // simulate a buyer login
+      localStorage.setItem(
+        "tt_user",
+        JSON.stringify({ name: "Google User", role: "buyer" })
+      );
+      navigate("/");
+    }, 1000);
   };
 
-  // Overlay when logging in
   const overlay = loggingInAs ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white text-2xl font-semibold">
-      <div className="animate-pulse text-center">
-        Logging in as {loggingInAs}...
-      </div>
+      <div className="animate-pulse text-center">Logging in as {loggingInAs}...</div>
     </div>
   ) : null;
 
@@ -29,20 +51,17 @@ const Login = () => {
     <>
       {/* Dark strip under navbar */}
       <div className="fixed inset-x-0 top-0 h-16 bg-black z-30" />
-      <Navbar />
 
       {/* Background with fixed image */}
       <div
         className="fixed inset-0 bg-fixed bg-center bg-cover"
-        style={{
-          backgroundImage: "url('/login-banner.jpg')", // change path if needed
-        }}
+        style={{ backgroundImage: "url('/login-banner.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/70" />
       </div>
 
-      {/* Scrollable container — small movement allowed */}
-    <div className="relative z-40 h-[90vh] pt-16 flex flex-col items-center justify-center text-white px-4 overflow-y-auto">
+      {/* Content */}
+      <div className="relative z-40 h-[90vh] pt-16 flex flex-col items-center justify-center text-white px-4 overflow-y-auto">
         <div className="w-full max-w-md bg-black/50 backdrop-blur-md rounded-2xl p-8">
           <h2 className="text-3xl font-bold mb-2 text-center text-[#ff6600]">
             Welcome Back
@@ -79,37 +98,19 @@ const Login = () => {
             </label>
           </div>
 
-          {/* Dropdown */}
+          {/* Single Login button */}
           <div className="relative mb-6">
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="w-full flex items-center justify-between 
+              onClick={doLogin}
+              className="w-full flex items-center justify-center 
               bg-gradient-to-r from-[#ff6600] to-[#ff8533]
               text-black font-semibold px-4 py-2 rounded-md 
               shadow-[0_0_12px_rgba(255,102,0,0.6)] 
               hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] 
               hover:brightness-110 transition-all duration-300"
             >
-              <span>Login</span>
-              <span className="text-lg">&#9662;</span>
+              Login
             </button>
-
-            {dropdownOpen && (
-              <div className="absolute z-20 mt-2 w-full rounded-md bg-white text-black shadow-lg">
-                <div
-                  onClick={() => handleLogin("Buyer")}
-                  className="cursor-pointer px-4 py-2 hover:bg-[#ff6600]/20 transition"
-                >
-                  Login as Buyer
-                </div>
-                <div
-                  onClick={() => handleLogin("Seller")}
-                  className="cursor-pointer px-4 py-2 hover:bg-[#ff6600]/20 transition"
-                >
-                  Login as Seller
-                </div>
-              </div>
-            )}
           </div>
 
           {/* OR Separator */}
@@ -119,7 +120,7 @@ const Login = () => {
             <hr className="flex-1 border-gray-600" />
           </div>
 
-          {/* Google Login */}
+          {/* Google Login (mock) */}
           <button
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center gap-2 
@@ -130,7 +131,7 @@ const Login = () => {
             hover:brightness-110 transition-all duration-300"
           >
             <img
-              src='https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp'
+              src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp"
               alt="Google Logo"
               className="w-5 h-5"
             />

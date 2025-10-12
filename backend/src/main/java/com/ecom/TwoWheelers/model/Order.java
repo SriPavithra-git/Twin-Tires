@@ -1,10 +1,7 @@
 package com.ecom.TwoWheelers.model;
 
-import com.ecom.TwoWheelers.enums.BikeStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,21 +10,32 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private User buyer;
+    @Column(name = "buyer_id")
+    private Long buyerId;          // Buyer ID
+    private Long bikeId;          // The bike being ordered
+    @Column(name = "seller_id")
+    private Long sellerId;  // ✅ NEW FIELD
 
-    @ManyToOne
-    private Bike bike;
+    private String fullName;
+    private String phone;
+    private String altPhone;
+    private String address;
 
-    private String paymentType; // COD / Online
+    private String email;
 
-    private String status = "Pending"; // Pending, Confirmed, Dispatched, Delivered
+    @Column(name = "payment_type")
+    private String paymentMethod;
+    private Double totalAmount;
 
-    private LocalDateTime orderDate = LocalDateTime.now();
+    @Column(nullable = false)
+    private String status = "PENDING"; // PENDING, CONFIRMED, DELIVERED, CANCELLED
+
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

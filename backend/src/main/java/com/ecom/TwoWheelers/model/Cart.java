@@ -5,8 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
-@Table(name = "carts")
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "new_bike_id"}),
+                @UniqueConstraint(columnNames = {"user_id", "used_bike_id"})
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,10 +24,21 @@ public class Cart {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    private Bike bike;
+    // ✅ New bike (nullable)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "new_bike_id")
+    private NewBike newBike;
 
-    private Integer quantity = 1;
+    // ✅ Used bike (nullable)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "used_bike_id")
+    private UsedBike usedBike;
+
+    private Integer quantity;
+    @Column(name = "custom_price")
+    private BigDecimal customPrice;
+
 }

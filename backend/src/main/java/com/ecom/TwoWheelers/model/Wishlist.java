@@ -1,24 +1,25 @@
 package com.ecom.TwoWheelers.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "wishlists")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Table(name = "wishlist")
 public class Wishlist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    private Bike bike;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bike_id", nullable = false)
+    private NewBike newBike;
 }

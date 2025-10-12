@@ -1,109 +1,143 @@
-import React from "react";
+// src/components/CompareBikes.jsx
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { SAMPLE_BIKES } from "./BikeData";
-
-function currency(x) {
-  return x.toLocaleString("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  });
-}
 
 export default function CompareBikes() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { bikesToCompare } = location.state || { bikesToCompare: [] };
+  const [bikes, setBikes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const selectedBikes = SAMPLE_BIKES.filter((b) => bikesToCompare.includes(b.id));
+  const bikesToCompare = location.state?.bikesToCompare || [];
 
-  // Empty State
-  if (selectedBikes.length < 2) {
-    return (
-      <div className="min-h-screen bg-[#0d0d0d] text-white flex flex-col items-center justify-center px-6 py-10">
-        <div className="max-w-lg text-center">
-          <h2 className="mb-6 text-2xl font-semibold text-[#ffa500]">
-            Select at least 2 bikes to compare.
-          </h2>
-          <button
-            onClick={() => navigate(-1)}
-            className="rounded-lg border border-[#ff6600] px-6 py-2 font-semibold text-[#ff6600] transition hover:-translate-y-0.5 hover:bg-[#ff6600] hover:text-black hover:shadow-[0_6px_12px_rgba(255,102,0,0.4)]"
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
+  useEffect(() => {
+    if (!bikesToCompare.length) {
+      navigate("/buy");
+      return;
+    }
+
+    const fetchBikes = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const results = await Promise.all(
+          bikesToCompare.map(async (id) => {
+            try {
+              const res = await fetch(`/api/new-bikes/${id}`);
+              if (res.ok) {
+                const data = await res.json();
+                return {
+                  id: data.id,
+                  brand: data.brand,
+                  model: data.model,
+                  price: data.price,
+                  mileage: data.mileage || "—",
+                  fuelType: data.fuelType || "—",
+                  city: data.city || "—",
+                  year: data.year || "—",
+                  image:
+                    data.image ||
+                    (Array.isArray(data.imageUrls) ? data.imageUrls[0] : undefined) ||
+                    "/placeholder-bike.jpg",
+                };
+              } else {
+                // fallback to used bikes API
+                const usedRes = await fetch(`http://localhost:8080/api/used-bikes/${id}`);
+                if (!usedRes.ok) throw new Error();
+                const usedData = await usedRes.json();
+                return {
+                  id: usedData.id,
+                  brand: usedData.brand,
+                  model: usedData.model,
+                  price: usedData.price,
+                  mileage: usedData.mileage || "—",
+                  fuelType: usedData.fuelType || "—",
+                  city: usedData.city || "—",
+                  year: usedData.year || "—",
+                  image:
+                    usedData.imageUrl ||
+                    (Array.isArray(usedData.images) && usedData.images[0]) ||
+                    "/placeholder-bike.jpg",
+                };
+              }
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        setBikes(results.filter(Boolean));
+      } catch (e) {
+        setError("Failed to load bike details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBikes();
+  }, [bikesToCompare, navigate]);
+
+  if (loading) {
+    return <p className="text-center text-gray-400 mt-10">Loading comparison...</p>;
   }
 
-  // Comparison Grid
+  if (error) {
+    return <p className="text-center text-red-400 mt-10">{error}</p>;
+  }
+
+  if (bikes.length < 2) {
+    return <p className="text-center text-gray-400 mt-10">Select at least 2 bikes to compare.</p>;
+  }
+
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white px-6 py-10">
-      <div className="max-w-[1200px] mx-auto">
-        <h2 className="mb-8 text-3xl font-bold text-[#ffa500] text-center">
-          Compare Bikes
-        </h2>
+    <div className="min-h-screen bg-[#0d0d0d] text-white py-10 px-4 md:px-10">
+      <h1 className="text-3xl font-bold text-[#ff6600] mb-8 text-center">
+        Compare Bikes
+      </h1>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {selectedBikes.map((b) => (
-            <div
-              key={b.id}
-              className="rounded-xl bg-[#151515] border border-[#ff6600]/10 p-4 text-white shadow-[0_8px_28px_rgba(0,0,0,0.55)] hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(255,136,0,0.15)] transition"
-            >
-              {/* Image */}
-              <div className="mb-4 h-44 w-full overflow-hidden rounded-lg bg-[#0f0f0f]">
-                <img
-                  src={b.img}
-                  alt={b.model}
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                />
-              </div>
-
-              {/* Header */}
-              <h3 className="mb-2 text-lg font-semibold text-[#ffb84d]">
-                {b.brand} {b.model}
-              </h3>
-
-              {/* Table */}
-              <table className="w-full border-collapse text-sm text-gray-300">
-                <tbody>
-                  <tr className="border-t border-[#ffffff1a]">
-                    <td className="py-2 font-medium text-[#ff9a1a]">Price</td>
-                    <td className="py-2 text-right text-white">
-                      {currency(b.price)}
-                    </td>
-                  </tr>
-                  <tr className="border-t border-[#ffffff1a]">
-                    <td className="py-2 font-medium text-[#ff9a1a]">Fuel</td>
-                    <td className="py-2 text-right text-white">{b.fuelType}</td>
-                  </tr>
-                  <tr className="border-t border-[#ffffff1a]">
-                    <td className="py-2 font-medium text-[#ff9a1a]">Mileage</td>
-                    <td className="py-2 text-right text-white">
-                      {b.mileage} km/l
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {/* Description */}
-              {b.description && (
-                <p className="mt-4 text-sm text-gray-400">{b.description}</p>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Back Button */}
-        <div className="mt-10 flex justify-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="rounded-lg bg-gradient-to-b from-[#ffb84d] to-[#ff6600] px-6 py-2 font-bold text-black shadow-[0_8px_20px_rgba(255,140,0,0.12)] transition hover:-translate-y-0.5 hover:brightness-105"
+      <div
+        className={`grid gap-6 justify-center ${
+          bikes.length === 2 ? "grid-cols-2" : "grid-cols-3"
+        }`}
+      >
+        {bikes.map((b) => (
+          <div
+            key={b.id}
+            className="bg-[#151515] border border-[#ff6600]/20 rounded-xl p-4 shadow-[0_8px_20px_rgba(0,0,0,0.6)] text-center"
           >
-            Back to Bikes
-          </button>
-        </div>
+           <div className="w-full h-48 bg-[#0f0f0f] flex items-center justify-center rounded-lg mb-4 overflow-hidden">
+  <img
+    src={b.image}
+    alt={b.model}
+    className="max-h-full max-w-full object-contain transition-transform duration-300 hover:scale-105"
+  />
+</div>
+
+            <h2 className="text-[#ffa500] font-semibold text-lg mb-2">
+              {b.brand} {b.model}
+            </h2>
+            <p className="text-[#ffb366] font-bold text-xl mb-3">
+              ₹{b.price?.toLocaleString("en-IN")}
+            </p>
+            <div className="text-sm text-gray-300 space-y-1">
+              <p><span className="text-[#ff8533]">Mileage:</span> {b.mileage}</p>
+              <p><span className="text-[#ff8533]">Fuel Type:</span> {b.fuelType}</p>
+              <p><span className="text-[#ff8533]">City:</span> {b.city}</p>
+              <p><span className="text-[#ff8533]">Year:</span> {b.year}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center mt-10">
+        <button
+          onClick={() => navigate("/buy")}
+          className="bg-gradient-to-r from-[#ff6600] to-[#ff8533] text-black font-semibold px-6 py-3 rounded-lg shadow-[0_0_15px_rgba(255,102,0,0.6)] hover:shadow-[0_0_25px_rgba(255,102,0,0.9)] transition-all duration-300"
+        >
+          Back to Bikes
+        </button>
       </div>
     </div>
   );

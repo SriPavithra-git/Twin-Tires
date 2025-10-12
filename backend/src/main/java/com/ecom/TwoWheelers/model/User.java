@@ -1,8 +1,10 @@
 package com.ecom.TwoWheelers.model;
 
 import com.ecom.TwoWheelers.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class User {
 
     @Id
@@ -31,6 +34,7 @@ public class User {
     private Role role = Role.BUYER;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Address> addresses;
 
 }

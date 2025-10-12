@@ -1,5 +1,6 @@
+
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const FooterContainer = ({ children }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 py-10 max-w-6xl mx-auto">
@@ -8,6 +9,8 @@ const FooterContainer = ({ children }) => (
 );
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   return (
     <footer className="bg-[#0d0d0d] text-white border-t border-[#ff6600]/10 mt-16">
       {/* Top Grid */}
@@ -29,7 +32,7 @@ const Footer = () => {
           <ul className="space-y-2 text-gray-300 text-sm">
             <li>
               <Link
-                to="#services"
+                to="/services"
                 className="hover:text-[#ffb84d] transition-colors"
               >
                 Services
@@ -37,7 +40,7 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                to="#about"
+                to="/about"
                 className="hover:text-[#ffb84d] transition-colors"
               >
                 About Us
@@ -45,7 +48,7 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                to="#contact"
+                to="/contact"
                 className="hover:text-[#ffb84d] transition-colors"
               >
                 Contact
@@ -53,7 +56,7 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                to="/explore"
+                to="/buy"
                 className="hover:text-[#ffb84d] transition-colors"
               >
                 Explore Bikes
@@ -61,7 +64,7 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                to="/buy-sell"
+                to="/sell"
                 className="hover:text-[#ffb84d] transition-colors"
               >
                 Buy / Sell
@@ -76,10 +79,38 @@ const Footer = () => {
             Services
           </h3>
           <ul className="space-y-2 text-gray-300 text-sm">
-            <li>Buy & Sell Bikes</li>
-            <li>Compare Vehicles</li>
-            <li>Upcoming Launches</li>
-            <li>Find Dealers</li>
+            <li>
+              <Link
+                to="/buy"
+                className="hover:text-[#ffb84d] transition-colors"
+              >
+                Buy & Sell Bikes
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/compare"
+                className="hover:text-[#ffb84d] transition-colors"
+              >
+                Compare Vehicles
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/upcoming"
+                className="hover:text-[#ffb84d] transition-colors"
+              >
+                Upcoming Launches
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dealers"
+                className="hover:text-[#ffb84d] transition-colors"
+              >
+                Find Dealers
+              </Link>
+            </li>
           </ul>
         </div>
 
@@ -97,28 +128,48 @@ const Footer = () => {
           </p>
           <p className="text-gray-300 text-sm mb-3">Phone: +91 96663 38612</p>
           <div className="flex gap-3">
-            <a href="#" className="hover:scale-110 transition-transform">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:scale-110 transition-transform"
+            >
               <img
                 src="/facebook.png"
                 alt="Facebook"
                 className="w-5 h-5 opacity-80 hover:opacity-100"
               />
             </a>
-            <a href="#" className="hover:scale-110 transition-transform">
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:scale-110 transition-transform"
+            >
               <img
                 src="/twitter.png"
                 alt="Twitter"
                 className="w-5 h-5 opacity-80 hover:opacity-100"
               />
             </a>
-            <a href="#" className="hover:scale-110 transition-transform">
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:scale-110 transition-transform"
+            >
               <img
                 src="/instagram.png"
                 alt="Instagram"
                 className="w-5 h-5 opacity-80 hover:opacity-100"
               />
             </a>
-            <a href="#" className="hover:scale-110 transition-transform">
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:scale-110 transition-transform"
+            >
               <img
                 src="/linkedin.png"
                 alt="LinkedIn"

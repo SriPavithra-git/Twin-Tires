@@ -25,7 +25,7 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "BikeId",nullable = false)
-    private Bike bike;
+    private UsedBike bike;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus=BookingStatus.PENDING;

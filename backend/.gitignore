@@ -33,4 +33,9 @@ build/
 .vscode/
 
 backend/src/main/resources/application.properties
+# Ignore environment variables and credentials
+.env
+application-local.properties
+*.env
+
 

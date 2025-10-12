@@ -1,6 +1,6 @@
 package com.ecom.TwoWheelers.dto;
 
-import com.ecom.TwoWheelers.model.Bike;
+import com.ecom.TwoWheelers.model.UsedBike;
 import com.ecom.TwoWheelers.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +17,6 @@ public class SellerDashboardDTO {
     private String email;
     private String phone;
 
-    private List<Bike> bikesAdded;
+    private List<UsedBike> bikesAdded;
     private List<Order> ordersReceived;
 }

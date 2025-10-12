@@ -18,18 +18,17 @@ public class LoginService {
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
         Optional<User> user=registerRepo.findByEmail(loginRequestDTO.getEmail());
         LoginResponseDTO response=new LoginResponseDTO();
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             response.setMessage("Invalid email");
-        }
-        else {
-        if(user.get().getPassword().equalsIgnoreCase(loginRequestDTO.getPassword())){
-            response.setMessage("Login successfull!");
-            response.setName(user.get().getName());
-            response.setRole(user.get().getRole());
-        }
-        else{
-            response.setMessage("invalid password");
-        }
+        } else {
+            if (user.get().getPassword().equals(loginRequestDTO.getPassword())) { // ← equals, not equalsIgnoreCase
+                response.setMessage("Login successfull!");
+                response.setId(user.get().getId());
+                response.setName(user.get().getName());
+                response.setRole(user.get().getRole());
+            } else {
+                response.setMessage("Invalid password");
+            }
         }
 
         return response;

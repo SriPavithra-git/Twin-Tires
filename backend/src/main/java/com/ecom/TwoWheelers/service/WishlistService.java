@@ -1,57 +1,71 @@
 package com.ecom.TwoWheelers.service;
 
-import com.ecom.TwoWheelers.exception.ResourceNotFoundException;
-import com.ecom.TwoWheelers.model.Bike;
+import com.ecom.TwoWheelers.dto.CartItemDto;
+import com.ecom.TwoWheelers.model.NewBike;
 import com.ecom.TwoWheelers.model.User;
 import com.ecom.TwoWheelers.model.Wishlist;
-import com.ecom.TwoWheelers.repository.BikeRepository;
+import com.ecom.TwoWheelers.repository.NewBikeRepository;
 import com.ecom.TwoWheelers.repository.UserRepository;
 import com.ecom.TwoWheelers.repository.WishlistRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WishlistService {
 
-    @Autowired
-    private WishlistRepository wishlistRepository;
+    private final WishlistRepository wishlistRepository;
+    private final UserRepository userRepository;
+    private final NewBikeRepository newBikeRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private BikeRepository bikeRepository;
-
-    // Add bike to wishlist
-    public Wishlist addToWishlist(Long userId, Long bikeId) {
+    /** ➕ Add to wishlist */
+    public void addToWishlist(Long userId, Long newBikeId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
-        Bike bike = bikeRepository.findById(bikeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Bike not found with ID: " + bikeId));
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        NewBike bike = newBikeRepository.findById(newBikeId)
+                .orElseThrow(() -> new RuntimeException("Bike not found"));
 
-        // Check if already in wishlist
-        if (wishlistRepository.findByUserIdAndBikeBikeId(userId, bikeId).isPresent()) {
-            return null; // or throw exception if you want
+        boolean exists = wishlistRepository.findByUserIdAndNewBikeId(userId, newBikeId).isPresent();
+        if (!exists) {
+            Wishlist w = new Wishlist(null, user, bike);
+            wishlistRepository.save(w);
         }
-
-        Wishlist wishlist = new Wishlist();
-        wishlist.setUser(user);
-        wishlist.setBike(bike);
-
-        return wishlistRepository.save(wishlist);
     }
 
-    // Remove bike from wishlist
-    public void removeFromWishlist(Long userId, Long bikeId) {
-        Wishlist wishlist = wishlistRepository.findByUserIdAndBikeBikeId(userId, bikeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Wishlist item not found"));
-        wishlistRepository.delete(wishlist);
+    /** ❌ Remove from wishlist */
+    public void removeFromWishlist(Long userId, Long newBikeId) {
+        wishlistRepository.findByUserIdAndNewBikeId(userId, newBikeId)
+                .ifPresent(wishlistRepository::delete);
     }
 
-    // View wishlist for a user
-    public List<Wishlist> getWishlistByUser(Long userId) {
-        return wishlistRepository.findByUser_Id(userId);
+    /** 🧾 Get all wishlist items */
+    public List<CartItemDto> getWishlistItems(Long userId) {
+        return wishlistRepository.findByUserId(userId)
+                .stream()
+                .map(w -> {
+                    NewBike b = w.getNewBike();
+                    String image = (b.getImageUrls() != null && !b.getImageUrls().isEmpty())
+                            ? b.getImageUrls().get(0)
+                            : "/placeholder-bike.jpg";
+
+                    BigDecimal price = b.getPrice() != null ? b.getPrice() : BigDecimal.ZERO;
+
+                    return new CartItemDto(
+                            w.getId(),
+                            1, // quantity always 1 in wishlist
+                            new CartItemDto.BikeDto(
+                                    b.getId(),
+                                    b.getBrand(),
+                                    b.getModel(),
+                                    price,
+                                    image,
+                                    "NEW" // ✅ since Wishlist currently uses NewBike only
+                            )
+                    );
+                })
+                .toList();
     }
 }

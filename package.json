@@ -1,12 +1,13 @@
 {
   "name": "twin-tires",
   "private": true,
+  "version": "1.0.0",
   "scripts": {
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && ( ./mvnw spring-boot:run || ./mvnw.cmd spring-boot:run )",
     "dev": "concurrently -n FRONTEND,BACKEND -c auto \"npm:dev:frontend\" \"npm:dev:backend\""
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.0.0"
   }
 }

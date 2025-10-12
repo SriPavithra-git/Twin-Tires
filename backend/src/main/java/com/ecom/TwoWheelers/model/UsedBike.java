@@ -1,66 +1,37 @@
 package com.ecom.TwoWheelers.model;
 
-import com.ecom.TwoWheelers.enums.BikeStatus;
-import com.ecom.TwoWheelers.enums.BikeType;
-import com.ecom.TwoWheelers.enums.FuelType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "used_bikes")
 @Data
-@Table(name="bikes")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Bike {
+public class UsedBike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bikeId;   // lowercase b
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User seller;
+    private Long sellerId;
 
-    @Column(nullable = false)
     private String brand;
-
-    @Column(nullable = false)
     private String model;
-
-    @Column(nullable = false)
-    private Double price;
-
-    @Enumerated(EnumType.STRING)
-    private FuelType fuelType;
-
+    private BigDecimal price;
+    private String fuelType;
     private String mileage;
     private String engineCapacity;
     private Integer year;
-
     private String description;
-
-    @Enumerated(EnumType.STRING)
-    private BikeType type = BikeType.NEW;
-
-    @Enumerated(EnumType.STRING)
-    private BikeStatus status = BikeStatus.AVAILABLE;
-
-    @ElementCollection
-    private List<String> imageUrls;
-
-    private Integer ownerType;
+    private String ownerType;
     private String city;
-    @Column(name = "Bike_condition")
-    private String condition;
+    private String conditionStatus;
+    private String purchaseAge;
+    private String imageUrl; // main image
 
-    private boolean isUsed;         // 👈 new field
-    private String sellerType;
-
-
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -1,13 +1,14 @@
 // PromoCard.jsx
 import React from "react";
 
-export default function PromoCard({ promo = {}, onWishlist = () => {} }) {
+export default function PromoCard({ promo = {}, onView = () => {}, onWishlist = () => {} }) {
   return (
     <div className="flex items-stretch gap-2 rounded-[10px] border border-[rgba(255,103,20,0.12)] bg-[#111] p-0 text-white shadow-[0_6px_18px_rgba(0,0,0,0.06)]">
+      
       {/* Media */}
       <div className="relative w-[120px] shrink-0 overflow-hidden rounded-l-[10px]">
         <img
-          src={promo.img}
+          src={promo.img || "/placeholder-bike.jpg"}
           alt={promo.title}
           className="h-full w-full object-cover"
           loading="lazy"
@@ -37,7 +38,10 @@ export default function PromoCard({ promo = {}, onWishlist = () => {} }) {
           >
             Wishlist
           </button>
-          <button className="rounded-md bg-[linear-gradient(180deg,#ff9a1a,#ff6600)] px-3 py-1.5 text-[14px] font-bold text-[#111] shadow-[0_6px_16px_rgba(255,140,0,0.12)] transition hover:brightness-105">
+          <button
+            onClick={onView}
+            className="rounded-md bg-[linear-gradient(180deg,#ff9a1a,#ff6600)] px-3 py-1.5 text-[14px] font-bold text-[#111] shadow-[0_6px_16px_rgba(255,140,0,0.12)] transition hover:brightness-105"
+          >
             View
           </button>
         </div>
